@@ -1,0 +1,758 @@
+import java.util.*;
+import java.util.Arrays;
+import java.lang.*;
+import java.lang.Math.*;
+import javax.swing.*;
+import java.text.DecimalFormat;
+import java.util.StringTokenizer;
+class Person{
+	public int AGE;
+	public String fname, lname, sex;
+	public Boolean IsAlive=true;
+	
+	public Person(){
+		fname="Dr. John";
+		lname="Doe";
+		AGE=30;
+		sex="Male";
+	}
+	public Person(String fname, String lname,String sex, int AGE){
+		this.fname=fname;
+		this.lname=lname;
+		this.sex=sex;
+		this.AGE=AGE;
+	}
+	
+	public void KillPerson(){
+		IsAlive=false;
+	}
+	
+	public String getFname(){
+		return fname;
+	}
+	
+	public String getLname(){
+		return lname;
+	}
+	
+	public String getSex(){
+		return sex;
+	}
+	
+	public int getAGE(){
+		return AGE;
+	}
+	
+	public String getAlive(){
+		if(IsAlive == true){
+			return "Alive";
+		}
+		else{
+			return "Deceased";
+		}
+	}
+	
+	public void display(){
+		System.out.println("Name: "+getFname()+" "+getLname()+":");
+		System.out.println("Sex: "+getSex());
+		System.out.println("Age: "+getAGE());
+	}
+	
+}
+
+class Doctor extends Person{
+	private String Specialty, IdNumber;
+	private int treatments=5;
+	Drug[] perscribe = new Drug[3];
+	
+	public Doctor(){
+		super();
+		Specialty = SpecialtyGenerator();
+		IdNumber = IdNumberGenerator();
+		if(Specialty.equals("Oncology")){
+			perscribe[0] = new Drug("Chemo",5);
+		}
+		if(Specialty.equals("Surgeon")){
+			perscribe[0] = new Drug("Surgery",5);
+		}
+		if(Specialty.equals("General")){
+			perscribe[0] = new Drug("Anit Biotics",5);
+			perscribe[1] = new Drug("Anit Virals",5);
+			perscribe[2] = new Drug("Anit Fingals",5);
+		}
+	}
+	
+	public Doctor(String fname, String lname,String sex, int AGE,String Specialty, String IdNumber){
+		super(fname,lname,sex,AGE);
+		this.Specialty=Specialty;
+		this.IdNumber=IdNumber;
+		if(Specialty.equals("Oncology")){
+			perscribe[0] = new Drug("Chemo",5);
+		}
+		if(Specialty.equals("Surgeon")){
+			perscribe[0] = new Drug("Surgery",5);
+		}
+		if(Specialty.equals("General")){
+			perscribe[0] = new Drug("Anit Biotics",5);
+			perscribe[1] = new Drug("Anit Virals",5);
+			perscribe[2] = new Drug("Anit Fingals",5);
+		}
+	}
+	
+	public String getSpecialty(){
+		return Specialty;
+	}
+	
+	public String getIdNumber(){
+		return IdNumber;
+	}
+	
+	public int getTreatments(){
+		return treatments;
+	}
+	
+	public void reduceTreatments(){
+		treatments--;
+	}
+	
+	public void setSpecialty(String Specialty){
+		this.Specialty=Specialty;
+	}
+	
+	public static String IdNumberGenerator(){
+		Random ID = new Random();
+		int id = 1+ID.nextInt(999999);
+		
+		String IdNum = Integer.toString(id);
+		
+		boolean check=false;
+		if(IdNum.length() > 6 && IdNum.charAt(3) != '-')
+		{
+			System.out.println("ID Number too long!");
+			IdNum = "000-000";
+			return IdNum;
+		}
+		for(int i = 0; i < IdNum.length(); i++)
+		{
+				if((IdNum.charAt(i) >= '0' && IdNum.charAt(i) <= '9')|| IdNum.charAt(i) == '-')
+				{
+					check=true;
+				}
+		}
+		if(check == true)
+		{
+			boolean finished=false;
+			do{
+				if(IdNum.length() == 7 && IdNum.charAt(3) == '-')
+				{
+					finished = true;
+				}
+				if(finished == false)
+				{
+					int numlen=6;
+					String temp="";
+					for(int i=0; i < IdNum.length() && IdNum.charAt(i) != '-'; i++)
+					{
+						if(IdNum.charAt(i) >='0' && IdNum.charAt(i) <='9')
+						{
+							temp += IdNum.charAt(i);
+						}
+					}
+					IdNum = temp;
+					temp="";
+					numlen = numlen - IdNum.length();
+					for(int i=0; i < numlen; i++)
+					{
+						temp += "0";
+					}
+					IdNum = temp + IdNum;
+					IdNum = IdNum.substring(0,3)+"-"+IdNum.substring(3);
+					finished = true;
+				}
+			}while(finished != true);
+		}
+		return IdNum;
+	}
+	
+	public static String SpecialtyGenerator(){
+		Random Select = new Random();
+		String Specialty="";
+		int select = Select.nextInt(3);
+		if(select == 0){
+			Specialty="Oncology";
+		}
+		if(select == 1){
+			Specialty="Surgeon";
+		}
+		if(select == 2){
+			Specialty="General";
+		}
+		return Specialty;
+	}
+	
+	public boolean matchDr(Patient sick){
+		boolean help=false;
+		if(getSpecialty().equals("Oncology") && sick.getDisease().equals("Cancer")){
+			help = true;
+		}
+		if(getSpecialty().equals("Surgeon") && sick.getDisease().equals("Trama")){
+			help = true;
+		}
+		if(getSpecialty().equals("General") && (sick.getDisease().equals("Viral Infection") || sick.getDisease().equals("Bacterial Infection") || sick.getDisease().equals("Fungus"))){
+			help = true;
+		}
+		
+		return help;
+	}
+	
+	public void display(){
+		System.out.println("Name: "+getFname()+" "+getLname()+":");
+		System.out.println("Medical ID#: "+getIdNumber());
+		System.out.println("Sex: "+getSex());
+		System.out.println("Age: "+getAGE());
+		System.out.println("Specialty: "+getSpecialty());
+		if(Specialty.equals("Oncology")){
+		System.out.println("Available Drugs: "+perscribe[0].getName());
+		}
+		if(Specialty.equals("Surgeon")){
+			System.out.println("Available Drugs: "+perscribe[0].getName());
+		}
+		if(Specialty.equals("General")){
+			System.out.println("Available Drugs: "+perscribe[0].getName()+" "+perscribe[0].getAmmount()+" left");
+			System.out.println("Available Drugs: "+perscribe[1].getName()+"  "+perscribe[1].getAmmount()+" left");
+			System.out.println("Available Drugs: "+perscribe[2].getName()+" "+perscribe[2].getAmmount()+" left");
+		}
+		System.out.println("Treatments Available: "+getTreatments());
+		
+	}
+	
+	public void TreatPatient(Patient sick){
+		boolean help = matchDr(sick);
+		if(help == true){
+			if(sick.getDisease().equals("Viral Infection")){
+				perscribe[1].reduceAmmount();
+			}
+			if(sick.getDisease().equals("Bacterial Infection")){
+				perscribe[0].reduceAmmount();
+			}
+			if(sick.getDisease().equals("Fungus")){
+				perscribe[2].reduceAmmount();
+			}
+			if(sick.getDisease().equals("Cancer")){
+				perscribe[0].reduceAmmount();
+			}
+			if(sick.getDisease().equals("Trama")){
+				perscribe[0].reduceAmmount();
+			}
+			reduceTreatments();
+			sick.HealPatient();
+		}
+		else{
+			System.out.println("Wrong Specialty & Wrong Drugs, you just KILLED a person!");
+			reduceTreatments();
+			sick.setDisease("N/A");
+			sick.KillPerson();
+		}
+	}
+	
+}
+
+class Patient extends Person{
+	String disease, medicalNumber;
+	//Drug medicate;
+	boolean health=false;
+	
+	public Patient(){
+		super("Sick","Person","Female",25);
+		disease=DiseaseGenerator();
+		medicalNumber=MedicalNumberGenerator();
+	}
+	
+	public void setDisease(String set){
+		disease=set;
+	}
+	
+	public String getDisease(){
+		return disease;
+	}
+	
+	public String getMedicalNumber(){
+		return medicalNumber;
+	}
+	
+	public boolean getHealth(){
+		return health;
+	}
+	
+	public String getDoctorNeeded(){
+		String Specialty="";
+		if(disease.equals("Viral Infection")||disease.equals("Bacterial Infection")||disease.equals("Fungus")){
+			Specialty="General";
+		}
+		if(disease.equals("Cancer")){
+			Specialty="Oncology";
+		}
+		if(disease.equals("Trama")){
+			Specialty="Surgeon";
+		}
+		if(disease.equals("Cured")){
+			Specialty="None";
+		}
+		return Specialty;
+	}
+	
+	public String getDrugNeeded(){
+		String drug="";
+		if(disease.equals("Viral Infection")){
+			drug="Anit Virals";
+		}
+		if(disease.equals("Bacterial Infection")){
+			drug="Anit Biotics";
+		}
+		if(disease.equals("Fungus")){
+			drug="Anit Fingals";
+		}
+		if(disease.equals("Trama")){
+			drug="Surgery";
+		}
+		if(disease.equals("Cancer")){
+			drug="Chemo";
+		}
+		if(disease.equals("Cured")){
+			drug="None";
+		}
+		return drug;
+	}
+	
+	public static String DiseaseGenerator(){
+		Random Select = new Random();
+		String Disease="";
+		int select = Select.nextInt(5);
+		if(select == 0){
+			Disease="Viral Infection";
+		}
+		if(select == 1){
+			Disease="Bacterial Infection";
+		}
+		if(select == 2){
+			Disease="Fungus";
+		}
+		if(select == 3){
+			Disease="Cancer";
+		}
+		if(select == 4){
+			Disease="Trama";
+		}
+		return Disease;
+	}
+	
+	public void HealPatient(){
+		health=true;
+		disease="Cured";
+	}
+	
+	public static String MedicalNumberGenerator(){
+		Random Num = new Random();
+		int Medical = Num.nextInt(999);
+		String MedicalNumber= Integer.toString(Medical);
+		return MedicalNumber;
+	}
+	
+	public void display(){
+		System.out.println("Name: "+getFname()+" "+getLname()+":");
+		System.out.println("Medical Number#: "+getMedicalNumber());
+		System.out.println("Sex: "+getSex());
+		System.out.println("Age: "+getAGE());
+		System.out.println("Disease: "+getDisease());
+		System.out.println("Doctor Needed: "+getDoctorNeeded());
+		System.out.println("Drug Needed: "+getDrugNeeded());
+		System.out.println("Patient is : "+getAlive());
+	}
+
+	
+}
+
+class Drug{
+	String name;
+	int ammout;
+	
+	public Drug(String name, int ammout){
+		this.ammout=ammout;
+		this.name=name;
+	}
+	
+	public String getName(){
+		return name;
+	}
+	
+	public int getAmmount(){
+		return ammout;
+	}
+	
+	public void setName(String name){
+		this.name=name;
+	}
+	
+	public void reduceAmmount(){
+		ammout=ammout-1;
+	}
+	
+}
+
+class Hospital{
+	int size=1, count=0, numpatient=0, patient=-1, numDr=0, Dr=-1;
+	Person[] ER = new Person[size];
+	
+	public void DoubleHosital(){
+		size = size*2;
+		Person temparray[] = new Person[size];
+		System.arraycopy(ER,0,temparray,0,ER.length);
+		ER = temparray;			
+	}
+	
+	public void DischargePatient(int selection){
+		if(((Patient)ER[selection]).getHealth() == false){
+			System.out.println("Patiend is too sick to go home.");
+			Menu();
+		}
+		if(selection <= count)
+		{
+			ER[selection] = ER[count-1];
+			count--;
+			numpatient--;
+		}
+		patient=-1;
+	}
+	
+	public void RemoveDoctor(int selection){
+		if(((Doctor)ER[selection]).getTreatments() > 0){
+			System.out.println("Doctor had more treatments left hes not going home yet.");
+			char exit = Menu();
+		}
+		if(selection <= count)
+		{
+			ER[selection] = ER[count-1];
+			count--;
+			numDr--;
+		}
+		Dr=-1;
+	}
+	
+	public void AddPatient(){
+		Scanner reader = new Scanner(System.in);
+		int num=0;
+		System.out.print("Enter the number of Patients you want to add...");
+		while(!reader.hasNextInt()) reader.next();
+		num=reader.nextInt();
+		for(int i=0;i<num;i++){
+			System.out.println("Random patient being generated...");
+			Person sick= new Patient();
+			ER[count] = sick;
+			count++;
+			numpatient++;
+			if(count == size)
+			{
+				DoubleHosital();
+			}
+		}
+		System.out.println("");
+	}
+	
+	public void AddDoctor(){
+		int allowed = (int)Math.ceil((double)numpatient/3.0);
+		Scanner reader = new Scanner(System.in);
+		System.out.println("You are allowed to create "+allowed+" Doctors");
+		for(int i=0;i<allowed;i++){
+			System.out.println("To generate random Doctor press 1");
+			System.out.println("To generate customer Doctor press 2");
+			int selection=0;
+			boolean valid=true;
+			do{
+				while(!reader.hasNextInt()) reader.next();
+				selection=reader.nextInt();
+				if(selection <1 || selection >2){
+					System.out.println("Invalid Selection. Imput a 1 or 2!");
+				}
+			}while(!valid);
+			if(selection==1){
+				Person DR= new Doctor();
+				ER[count] = DR;
+				count++;
+				numDr++;
+			if(count == size)
+			{
+				DoubleHosital();
+			}
+			System.out.println("");
+			}
+			if(selection ==2){
+				String fname="",lname="",Specialty="",IdNumber="",sex="";
+				int AGE=0;
+				System.out.print("Enter First name: ");
+				reader.nextLine();
+				fname=reader.nextLine();
+				System.out.print("Enter Last name: ");
+				lname=reader.nextLine();
+				System.out.print("Enter ID Number: ");
+				IdNumber=reader.nextLine();
+				System.out.println("For Male Doctor press 1");
+				System.out.println("For Female Doctor press 2");
+				int choice=0;
+				boolean val=true;
+				do{
+					while(!reader.hasNextInt()) reader.next();
+					choice=reader.nextInt();
+					if(choice <1 || choice >2){
+						System.out.println("Invalid Selection. Imput a 1 or 2!");
+					}
+				}while(!val);
+				if(choice==1){
+					sex="Male";
+				}
+				if(choice==2){
+					sex="Female";
+				}
+				System.out.print("Enter Age: ");
+				while(!reader.hasNextInt()) reader.next();
+				AGE=reader.nextInt();
+				System.out.println("For Surgeon press 1");
+				System.out.println("For Oncologist press 2");
+				System.out.println("For General Practitioner press 3");
+				choice=0;
+				val=true;
+				do{
+					while(!reader.hasNextInt()) reader.next();
+					choice=reader.nextInt();
+					if(choice <1 || choice >3){
+						System.out.println("Invalid Selection. Imput a 1 or 2!");
+					}
+				}while(!val);
+				if(choice==1){
+					Specialty="Surgeon";
+				}
+				if(choice==2){
+					Specialty="Oncology";
+				}
+				if(choice==3){
+					Specialty="General";
+				}
+				Person DR= new Doctor(fname,lname,sex,AGE,Specialty,IdNumber);
+				ER[count] = DR;
+				count++;
+				numDr++;
+				if(count == size)
+				{
+					DoubleHosital();
+				}
+		}
+			System.out.println("");
+			
+		}
+	}
+	
+	public void ListAllPeople(){
+		Scanner reader = new Scanner(System.in);
+		double total=0;
+		if(count==0)
+		{
+			System.out.println("No People in Hospital");
+			System.out.println("");
+		}
+		if(count > 0)
+		{
+			for(int i=0; i < count;i++)
+			{	
+				ER[i].display();
+				System.out.println("");
+				if(i%4 == 0){
+					String halt="";
+					System.out.println("Press any key to continue through list or 'e' to exit list");
+					halt=reader.nextLine();
+					if(halt.equals("e") || halt.equals("E")){
+						i=count;
+					}
+				}
+			}
+			
+			System.out.println("");
+			
+		}
+	}
+	
+	public void SelectPatient(){
+		Scanner reader = new Scanner(System.in);
+		String query="";
+		System.out.print("Enter Patiend Medical Number: ");
+		query=reader.nextLine();
+		
+		for(int i=0; i < count; i++)
+		{//This loop steps through each element in the ER array compairing the Medical numbers
+			System.out.println("Checking Patients... ");
+			if(ER[i].getClass().getName().equals("Patient"))
+			{
+				if(((Patient)ER[i]).getMedicalNumber().equals(query))
+				{
+					System.out.println("Patient found.");
+					((Patient)ER[i]).display();
+					patient = i;
+				}
+			}
+		}
+		if(patient == -1)
+		{
+			System.out.println("Patient was not found.");
+		}
+	}
+	
+	public void SelectDoctor(){
+		Scanner reader = new Scanner(System.in);
+		String query="";
+		System.out.print("Enter Doctor Medical ID Number in 000-000 format: ");
+		query=reader.nextLine();
+		
+		for(int i=0; i < count; i++)
+		{//This loop steps through each element in the ER array compairing the ID numbers
+			System.out.println("Checking Doctors... ");
+			if(ER[i].getClass().getName().equals("Doctor"))
+			{
+				if(((Doctor)ER[i]).getIdNumber().equals(query))
+				{
+					System.out.println("Doctor found.");
+					((Doctor)ER[i]).display();
+					Dr = i;
+				}
+				if(((Doctor)ER[i]).getTreatments() == 0){
+					System.out.println("Doctor has no more treatments available. Sending Doctor home.");
+					RemoveDoctor(Dr);
+				}
+			}
+		}
+		if(Dr == -1)
+		{
+			System.out.println("Doctor was not found.");
+		}
+	}
+	
+	public void Run(){//This Method calls the Method selected in the Menu
+		char selection=Menu();
+		int choice=0;
+			
+			while(choice != '9')
+			{//These 'IF' statements assign a numerical value to the choice for 'case switch'
+				if(selection == 'P' || selection == 'p'){choice=1;}
+				if(selection == 'D' || selection == 'd'){choice=2;}
+				if(selection == 'S' || selection == 's'){choice=3;}
+				if(selection == 'R' || selection == 'r'){choice=4;}
+				if(selection == 'T' || selection == 't'){choice=5;}
+				if(selection == 'X' || selection == 'x'){choice=6;}
+				if(selection == 'H' || selection == 'h'){choice=7;}
+				if(selection == 'L' || selection == 'l'){choice=8;}
+				if(selection == 'Q' || selection == 'q'){choice=9;}
+				switch(choice)
+				{
+					case 1: AddPatient();choice=0; break;
+					case 2: AddDoctor();choice=0; break;
+					case 3: SelectPatient();choice=0; break;
+					case 4: SelectDoctor();choice=0; break;
+					case 5: ((Doctor)ER[Dr]).TreatPatient(((Patient)ER[patient]));choice=0; break;
+					case 6: DischargePatient(patient);choice=0; break;
+					case 7: RemoveDoctor(Dr);choice=0; break;
+					case 8: ListAllPeople();choice=0; break;
+					case 9: return;
+					default: System.out.println("Command was not recognized; Please try again.");
+				}
+				selection = Menu();
+			}
+	}
+	
+	public char Menu(){//This Method only DISPLAYS the Menu
+		Scanner reader = new Scanner(System.in);
+		System.out.println("");
+		System.out.println("P: Add Patients");
+		System.out.println("D: Add Doctors");
+		System.out.println("S: Select Patient");
+		System.out.println("R: Select Doctor");
+		System.out.println("T: Treat Patient");
+		System.out.println("X: Discharge Patient");
+		System.out.println("H: Send Doctor Home");
+		System.out.println("L: List all people");
+		System.out.println("Q: Quit");
+		System.out.println("");
+		System.out.print("Current Patient selected: ");
+		
+			if(patient == -1)
+			{
+				System.out.println("NONE");
+			}
+			if(patient >= 0 )
+			{
+				System.out.print("Patient Medical# "+((Patient)ER[patient]).getMedicalNumber()+"  ");
+				System.out.print(" Disease: "+((Patient)ER[patient]).getDisease()+".");
+				System.out.print(" Status: "+((Patient)ER[patient]).getAlive());
+			}
+		System.out.println("");
+		System.out.println("");
+		System.out.print("Current Doctor selected: ");
+		
+			if(Dr == -1)
+			{
+				System.out.println("NONE");
+			}
+			if(Dr >= 0 )
+			{
+				System.out.print("Doctor ID# "+((Doctor)ER[Dr]).getIdNumber()+"  ");
+				System.out.print("    Specialty: "+((Doctor)ER[Dr]).getSpecialty()+".");
+				System.out.print("  Treatments left: "+((Doctor)ER[Dr]).getTreatments());
+			}
+		System.out.println("");
+		System.out.print("Enter command: ");
+		
+		char selection = reader.next().charAt(0);
+		//This section stops the user from searching for a patient if none have been admitted
+		if(patient == -1 && ER[0] == null && (selection == 'S' || selection == 's' || selection == 'R' || selection == 'r' ))
+		{
+			System.out.println("No Patients in Hospital. Please add Patients");
+			System.out.println("");
+			selection=Menu();
+		}
+		
+		if(patient == -1 && (selection == 'T'||selection == 't'||selection == 'X'||selection == 'x'))
+		{
+			System.out.println("Please select a Patient first.");
+			System.out.println("");
+			selection=Menu();
+		}
+		
+		if(Dr == -1 && (selection == 'T'||selection == 't'||selection == 'X'||selection == 'x'))
+		{
+			System.out.println("A Doctor must be selected before you can Treat or Discharge a Patient");
+			System.out.println("");
+			selection=Menu();
+		}
+
+		return selection;
+	}
+	
+}
+class Driver{
+	public static void main(String[] args){
+		System.out.println("WELCOME TO SHANE'S HOSPITAL.");
+		System.out.println("");
+		System.out.println("");
+		System.out.println("Here is how the game works.");
+		System.out.println("");
+		System.out.println("Choose how many Patients you want to create.");
+		System.out.println("Each patient will be given a random disease.");
+		System.out.println("For every 3 patients you create you are allowed");
+		System.out.println("to create 1 Doctor.");
+		System.out.println("Each Doctor has a Specialty and can only treat certin patients.");
+		System.out.println("Each Doctor can only treat 5 patients before they go home.");
+		System.out.println("If you treat a Patient with the wrong Doctor you will kill the Patient.");
+		System.out.println("The goal is to cure all the patients.");
+		System.out.println("GOOD LUCK... ITS A BEAUTIFUL DAY TO SAVE LIVES!");
+		
+		Hospital Game = new Hospital();
+		Game.Run();
+	}
+	
+}
